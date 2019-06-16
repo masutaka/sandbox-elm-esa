@@ -99,11 +99,7 @@ view model =
                 ]
                 []
             , button
-                [ disabled
-                    ((model.userState == Waiting)
-                        || String.isEmpty (String.trim model.input)
-                    )
-                ]
+                [ disabled (model.userState == Waiting) ]
                 [ text "Submit" ]
             ]
         , case model.userState of
