@@ -126,7 +126,7 @@ linkPost : Post -> Html msg
 linkPost post =
     li []
         [ a [ href post.url, target "_blank" ]
-            [ text (Maybe.withDefault "" post.category ++ post.name) ]
+            [ text post.full_name ]
         ]
 
 
@@ -143,6 +143,7 @@ type alias Posts =
 type alias Post =
     { category : Maybe String
     , name : String
+    , full_name : String
     , url : String
     }
 
@@ -156,7 +157,8 @@ postsDecoder =
 
 postDecoder : Decoder Post
 postDecoder =
-    D.map3 Post
+    D.map4 Post
         (D.maybe (D.field "category" D.string))
         (D.field "name" D.string)
+        (D.field "full_name" D.string)
         (D.field "url" D.string)
