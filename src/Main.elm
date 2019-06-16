@@ -31,7 +31,7 @@ type alias Model =
 type UserState
     = Init
     | Waiting
-    | Loaded User
+    | Loaded Posts
     | Failed Http.Error
 
 
@@ -49,7 +49,7 @@ init _ =
 type Msg
     = Input String
     | Send
-    | Receive (Result Http.Error User)
+    | Receive (Result Http.Error Posts)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -63,14 +63,21 @@ update msg model =
                 | input = ""
                 , userState = Waiting
               }
-            , Http.get
-                { url = "https://api.github.com/users/" ++ model.input
-                , expect = Http.expectJson Receive userDecoder
+            , Http.request
+                { method = "GET"
+                , headers = [ Http.header "Authorization" "Bearer elsEF-bG88mXB_KfgG6WKqnY9bayUL0z8m12L3nWLAc" ]
+                , url = "https://api.esa.io/v1/teams/feedforce/posts"
+
+                -- , url = "https://api.esa.io/v1/teams/" ++ model.input ++ "/posts"
+                , body = Http.emptyBody
+                , timeout = Nothing
+                , tracker = Nothing
+                , expect = Http.expectJson Receive postsDecoder
                 }
             )
 
-        Receive (Ok user) ->
-            ( { model | userState = Loaded user }, Cmd.none )
+        Receive (Ok posts) ->
+            ( { model | userState = Loaded posts }, Cmd.none )
 
         Receive (Err e) ->
             ( { model | userState = Failed e }, Cmd.none )
@@ -106,25 +113,20 @@ view model =
             Waiting ->
                 text "Waiting..."
 
-            Loaded user ->
-                a
-                    [ href user.htmlUrl
-                    , target "_blank"
-                    ]
-                    [ img [ src user.avatarUrl, width 200 ] []
-                    , div [] [ text user.name ]
-                    , div []
-                        [ case user.bio of
-                            Just bio ->
-                                text bio
-
-                            Nothing ->
-                                text ""
-                        ]
-                    ]
+            Loaded posts ->
+                ul []
+                    (List.map (\post -> linkPost post) posts.posts)
 
             Failed e ->
                 div [] [ text (Debug.toString e) ]
+        ]
+
+
+linkPost : Post -> Html msg
+linkPost post =
+    li []
+        [ a [ href post.url, target "_blank" ]
+            [ text (Maybe.withDefault "" post.category ++ post.name) ]
         ]
 
 
@@ -132,20 +134,29 @@ view model =
 -- DATA
 
 
-type alias User =
-    { login : String
-    , avatarUrl : String
+type alias Post =
+    { category : Maybe String
     , name : String
-    , htmlUrl : String
-    , bio : Maybe String
+    , url : String
     }
 
 
-userDecoder : Decoder User
-userDecoder =
-    D.map5 User
-        (D.field "login" D.string)
-        (D.field "avatar_url" D.string)
+type alias Posts =
+    { posts : List Post
+    , next_page : Maybe Int
+    }
+
+
+postDecoder : Decoder Post
+postDecoder =
+    D.map3 Post
+        (D.maybe (D.field "category" D.string))
         (D.field "name" D.string)
-        (D.field "html_url" D.string)
-        (D.maybe (D.field "bio" D.string))
+        (D.field "url" D.string)
+
+
+postsDecoder : Decoder Posts
+postsDecoder =
+    D.map2 Posts
+        (D.field "posts" (D.list postDecoder))
+        (D.maybe (D.field "next_page" D.int))
