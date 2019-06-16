@@ -134,6 +134,12 @@ linkPost post =
 -- DATA
 
 
+type alias Posts =
+    { posts : List Post
+    , next_page : Maybe Int
+    }
+
+
 type alias Post =
     { category : Maybe String
     , name : String
@@ -141,10 +147,11 @@ type alias Post =
     }
 
 
-type alias Posts =
-    { posts : List Post
-    , next_page : Maybe Int
-    }
+postsDecoder : Decoder Posts
+postsDecoder =
+    D.map2 Posts
+        (D.field "posts" (D.list postDecoder))
+        (D.maybe (D.field "next_page" D.int))
 
 
 postDecoder : Decoder Post
@@ -153,10 +160,3 @@ postDecoder =
         (D.maybe (D.field "category" D.string))
         (D.field "name" D.string)
         (D.field "url" D.string)
-
-
-postsDecoder : Decoder Posts
-postsDecoder =
-    D.map2 Posts
-        (D.field "posts" (D.list postDecoder))
-        (D.maybe (D.field "next_page" D.int))
