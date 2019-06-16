@@ -114,8 +114,11 @@ view model =
                 text "Waiting..."
 
             Loaded posts ->
-                ul []
-                    (List.map (\post -> linkPost post) posts.posts)
+                div []
+                    [ ul []
+                        (List.map (\post -> linkPost post) posts.posts)
+                    , text (String.fromInt (Maybe.withDefault 1 posts.next_page))
+                    ]
 
             Failed e ->
                 div [] [ text (Debug.toString e) ]
