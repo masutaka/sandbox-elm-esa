@@ -145,6 +145,7 @@ type alias Post =
     , name : String
     , full_name : String
     , url : String
+    , tags : List String
     }
 
 
@@ -157,8 +158,9 @@ postsDecoder =
 
 postDecoder : Decoder Post
 postDecoder =
-    D.map4 Post
+    D.map5 Post
         (D.maybe (D.field "category" D.string))
         (D.field "name" D.string)
         (D.field "full_name" D.string)
         (D.field "url" D.string)
+        (D.field "tags" (D.list D.string))
