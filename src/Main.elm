@@ -94,7 +94,7 @@ view model =
             [ input
                 [ onInput Input
                 , autofocus True
-                , placeholder "GitHub name"
+                , placeholder "foo category:bar/baz comment:foobar"
                 , value model.input
                 ]
                 []
