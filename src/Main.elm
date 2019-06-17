@@ -6,6 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Json.Decode as D exposing (Decoder)
+import Url.Builder
 
 
 main : Program () Model Msg
@@ -23,7 +24,7 @@ main =
 
 
 type alias Model =
-    { input : String
+    { searchQuery : String
     , userState : UserState
     }
 
@@ -56,19 +57,21 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Input newInput ->
-            ( { model | input = newInput }, Cmd.none )
+            ( { model | searchQuery = newInput }, Cmd.none )
 
         Send ->
             ( { model
-                | input = ""
+                | searchQuery = ""
                 , userState = Waiting
               }
             , Http.request
                 { method = "GET"
                 , headers = [ Http.header "Authorization" "Bearer elsEF-bG88mXB_KfgG6WKqnY9bayUL0z8m12L3nWLAc" ]
-                , url = "https://api.esa.io/v1/teams/feedforce/posts"
-
-                -- , url = "https://api.esa.io/v1/teams/" ++ model.input ++ "/posts"
+                , url =
+                    Url.Builder.crossOrigin
+                        "https://api.esa.io"
+                        [ "/v1/teams/feedforce/posts" ]
+                        [ Url.Builder.string "q" model.searchQuery, Url.Builder.string "page" "1" ]
                 , body = Http.emptyBody
                 , timeout = Nothing
                 , tracker = Nothing
@@ -95,7 +98,7 @@ view model =
                 [ onInput Input
                 , autofocus True
                 , placeholder "foo category:bar/baz comment:foobar"
-                , value model.input
+                , value model.searchQuery
                 ]
                 []
             , button
