@@ -26,6 +26,7 @@ main =
 type alias Model =
     { searchQuery : String
     , userState : UserState
+    , page : Int
     }
 
 
@@ -38,7 +39,7 @@ type UserState
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model "" Init
+    ( Model "" Init 1
     , Cmd.none
     )
 
@@ -49,7 +50,7 @@ init _ =
 
 type Msg
     = Input String
-    | Send
+    | Send Int
     | Receive (Result Http.Error Posts)
 
 
@@ -59,10 +60,9 @@ update msg model =
         Input newInput ->
             ( { model | searchQuery = newInput }, Cmd.none )
 
-        Send ->
+        Send newPage ->
             ( { model
-                | searchQuery = ""
-                , userState = Waiting
+                | userState = Waiting
               }
             , Http.request
                 { method = "GET"
@@ -71,7 +71,7 @@ update msg model =
                     Url.Builder.crossOrigin
                         "https://api.esa.io"
                         [ "/v1/teams/feedforce/posts" ]
-                        [ Url.Builder.string "q" model.searchQuery, Url.Builder.string "page" "1" ]
+                        [ Url.Builder.string "q" model.searchQuery, Url.Builder.string "page" (String.fromInt newPage) ]
                 , body = Http.emptyBody
                 , timeout = Nothing
                 , tracker = Nothing
@@ -93,7 +93,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ Html.form [ onSubmit Send ]
+        [ Html.form [ onSubmit (Send 1) ]
             [ input
                 [ onInput Input
                 , autofocus True
@@ -116,7 +116,7 @@ view model =
                 div []
                     [ ul []
                         (List.map (\post -> linkPost post) posts.posts)
-                    , text (String.fromInt (Maybe.withDefault 1 posts.next_page))
+                    , linkNextPage posts.next_page
                     ]
 
             Failed e ->
@@ -130,6 +130,12 @@ linkPost post =
         [ a [ href post.url, target "_blank" ]
             [ text post.full_name ]
         ]
+
+
+linkNextPage : Maybe Int -> Html Msg
+linkNextPage page =
+    a [ onClick (Send (Maybe.withDefault 1 page)), href "#" ]
+        [ text (String.fromInt (Maybe.withDefault 1 page)) ]
 
 
 
