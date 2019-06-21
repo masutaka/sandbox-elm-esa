@@ -119,7 +119,7 @@ view model =
                             (List.map (\post -> linkPost post) posts.posts)
                         ]
                     , nav [ class "pagination" ]
-                        [ linkPrevPage posts, linkNextPage posts ]
+                        [ linkPrevPage posts, currentPage posts, linkNextPage posts ]
                     ]
 
             Failed e ->
@@ -145,8 +145,13 @@ linkPrevPage posts =
                 ]
 
         Nothing ->
-            span [ class "page current" ]
-                [ text "?" ]
+            text ""
+
+
+currentPage : Posts -> Html Msg
+currentPage posts =
+    span [ class "page current" ]
+        [ text (String.fromInt posts.page) ]
 
 
 linkNextPage : Posts -> Html Msg
@@ -159,8 +164,7 @@ linkNextPage posts =
                 ]
 
         Nothing ->
-            span [ class "page current" ]
-                [ text "?" ]
+            text ""
 
 
 
