@@ -116,7 +116,12 @@ view model =
                 div []
                     [ ul []
                         (List.map (\post -> linkPost post) posts.posts)
-                    , linkNextPage posts.next_page
+                    , case posts.next_page of
+                        Just next_page ->
+                            linkNextPage next_page
+
+                        Nothing ->
+                            text ""
                     ]
 
             Failed e ->
@@ -132,10 +137,10 @@ linkPost post =
         ]
 
 
-linkNextPage : Maybe Int -> Html Msg
+linkNextPage : Int -> Html Msg
 linkNextPage page =
-    a [ onClick (Send (Maybe.withDefault 1 page)), href "#" ]
-        [ text (String.fromInt (Maybe.withDefault 1 page)) ]
+    a [ onClick (Send page), href "#" ]
+        [ text (String.fromInt page) ]
 
 
 
