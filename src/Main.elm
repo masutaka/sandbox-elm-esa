@@ -119,23 +119,7 @@ view model =
                             (List.map (\post -> linkPost post) posts.posts)
                         ]
                     , nav [ class "pagination" ]
-                        [ span [ class "page" ]
-                            [ case posts.prev_page of
-                                Just prev_page ->
-                                    linkToPage prev_page
-
-                                Nothing ->
-                                    text "?"
-                            ]
-                        , span [ class "page" ]
-                            [ case posts.next_page of
-                                Just next_page ->
-                                    linkToPage next_page
-
-                                Nothing ->
-                                    text "?"
-                            ]
-                        ]
+                        [ linkPrevPage posts, linkNextPage posts ]
                     ]
 
             Failed e ->
@@ -151,10 +135,32 @@ linkPost post =
         ]
 
 
-linkToPage : Int -> Html Msg
-linkToPage page =
-    a [ onClick (Send page), href "#" ]
-        [ text (String.fromInt page) ]
+linkPrevPage : Posts -> Html Msg
+linkPrevPage posts =
+    case posts.prev_page of
+        Just prev_page ->
+            span [ class "page" ]
+                [ a [ onClick (Send prev_page), href "#" ]
+                    [ text (String.fromInt prev_page) ]
+                ]
+
+        Nothing ->
+            span [ class "page current" ]
+                [ text "?" ]
+
+
+linkNextPage : Posts -> Html Msg
+linkNextPage posts =
+    case posts.next_page of
+        Just next_page ->
+            span [ class "page" ]
+                [ a [ onClick (Send next_page), href "#" ]
+                    [ text (String.fromInt next_page) ]
+                ]
+
+        Nothing ->
+            span [ class "page current" ]
+                [ text "?" ]
 
 
 
@@ -165,6 +171,7 @@ type alias Posts =
     { posts : List Post
     , prev_page : Maybe Int
     , next_page : Maybe Int
+    , page : Int
     }
 
 
@@ -179,10 +186,11 @@ type alias Post =
 
 postsDecoder : Decoder Posts
 postsDecoder =
-    D.map3 Posts
+    D.map4 Posts
         (D.field "posts" (D.list postDecoder))
         (D.maybe (D.field "prev_page" D.int))
         (D.maybe (D.field "next_page" D.int))
+        (D.field "page" D.int)
 
 
 postDecoder : Decoder Post
