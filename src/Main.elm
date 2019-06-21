@@ -116,9 +116,15 @@ view model =
                 div []
                     [ ul []
                         (List.map (\post -> linkPost post) posts.posts)
+                    , case posts.prev_page of
+                        Just prev_page ->
+                            linkToPage prev_page
+
+                        Nothing ->
+                            text ""
                     , case posts.next_page of
                         Just next_page ->
-                            linkNextPage next_page
+                            linkToPage next_page
 
                         Nothing ->
                             text ""
@@ -137,8 +143,8 @@ linkPost post =
         ]
 
 
-linkNextPage : Int -> Html Msg
-linkNextPage page =
+linkToPage : Int -> Html Msg
+linkToPage page =
     a [ onClick (Send page), href "#" ]
         [ text (String.fromInt page) ]
 
@@ -149,6 +155,7 @@ linkNextPage page =
 
 type alias Posts =
     { posts : List Post
+    , prev_page : Maybe Int
     , next_page : Maybe Int
     }
 
@@ -164,8 +171,9 @@ type alias Post =
 
 postsDecoder : Decoder Posts
 postsDecoder =
-    D.map2 Posts
+    D.map3 Posts
         (D.field "posts" (D.list postDecoder))
+        (D.maybe (D.field "prev_page" D.int))
         (D.maybe (D.field "next_page" D.int))
 
 
