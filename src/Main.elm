@@ -114,20 +114,28 @@ view model =
 
             Loaded posts ->
                 div []
-                    [ ul []
-                        (List.map (\post -> linkPost post) posts.posts)
-                    , case posts.prev_page of
-                        Just prev_page ->
-                            linkToPage prev_page
+                    [ div []
+                        [ ul []
+                            (List.map (\post -> linkPost post) posts.posts)
+                        ]
+                    , nav [ class "pagination" ]
+                        [ span [ class "page" ]
+                            [ case posts.prev_page of
+                                Just prev_page ->
+                                    linkToPage prev_page
 
-                        Nothing ->
-                            text ""
-                    , case posts.next_page of
-                        Just next_page ->
-                            linkToPage next_page
+                                Nothing ->
+                                    text "?"
+                            ]
+                        , span [ class "page" ]
+                            [ case posts.next_page of
+                                Just next_page ->
+                                    linkToPage next_page
 
-                        Nothing ->
-                            text ""
+                                Nothing ->
+                                    text "?"
+                            ]
+                        ]
                     ]
 
             Failed e ->
