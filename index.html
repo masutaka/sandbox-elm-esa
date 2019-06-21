@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html class="gr__feedforce_esa_io">
+  <head>
+    <meta charset="UTF-8">
+    <title>Sandbox Elm esa</title>
+    <link rel="stylesheet" media="all" href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" />
+    <link rel="stylesheet" media="all" href="https://assets.esa.io/assets/application-dc281ae86bee5063b37ef8bcd44c2db3947403841ac45cd98453f473d00ab8d4.css" />
+    <link rel="stylesheet" media="all" href="https://assets.esa.io/assets/user-theme--navy-374a151f10704776a30fb461f06db3cd8642faf86140a8afa44e6cb8143701bd.css" />
+    <script src="main.js"></script>
+  </head>
+
+  <body class="posts-index ja user-theme--default">
+    <div class="outer layout-outer">
+      <div class="layout-outer__side">
+        <header class="navbar-main" data-native-display="hidden" role="navigation">
+          <nav>
+            <ul class="nav-main">
+              <li class="nav-main__item is-new">
+                <div class="btn-new is-disabled"><span class="btn-new__image"></span><span class="btn-new__label">NEW POST</span></div>
+              </li>
+              <li class="is-home nav-main__item">
+                <a class="nav-main__link" href="/"><i class="nav-main__icon icon-tori-home"></i><span class="nav-main__label">HOME</span></a></li>
+              <li class="is-current nav-main__item">
+                <a class="nav-main__link" href="/posts"><i class="nav-main__icon fa fa-file-text-o"></i><span class="nav-main__label">POSTS</span></a></li>
+              <li class="nav-main__item">
+                <a class="nav-main__link" href="/tags"><i class="nav-main__icon fa fa-tags"></i><span class="nav-main__label">TAGS</span></a></li>
+            </ul>
+          </nav>
+        </header>
+      </div>
+      <div id="elm">
+        <script>
+         var app = Elm.Main.init({
+             node: document.getElementById('elm')
+         });
+        </script>
+      </div>
+    </div>
+  </body>
+</html>

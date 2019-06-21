@@ -92,38 +92,72 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ Html.form [ onSubmit (Send 1) ]
-            [ input
-                [ onInput Input
-                , autofocus True
-                , placeholder "foo category:bar/baz comment:foobar"
-                , value model.searchQuery
-                ]
-                []
-            , button
-                [ disabled (model.userState == Waiting) ]
-                [ text "Submit" ]
-            ]
-        , case model.userState of
-            Init ->
-                text ""
-
-            Waiting ->
-                text "Waiting..."
-
-            Loaded posts ->
-                div []
-                    [ div []
-                        [ ul []
-                            (List.map (\post -> linkPost post) posts.posts)
-                        ]
-                    , nav [ class "pagination" ]
-                        [ linkPrevPage posts, currentPage posts, linkNextPage posts ]
+    div [ class "layout-outer__main" ]
+        [ div [ class "navbar-sub" ]
+            [ i [ class "fa fa-folder navbar-sub__category-toggle category-toggle collapsed" ] []
+            , div [ class "dropdown nav-team" ]
+                [ a [ class "nav-team__link-home" ]
+                    [ div [ class "nav-team__thumbnail" ]
+                        [ img [ alt "feedforce", src "https://img.esa.io/uploads/production/teams/12180/icon/thumb_ms_5eec31c8c7a67ba0f127a9ca6268bd48.png" ] [] ]
+                    , div [ class "nav-team__name hidden-xs" ] [ text "feedforce" ]
                     ]
+                , a [ class "dropdown-toggle nav-team__toggle" ]
+                    [ i [ class "fa fa-caret-down nav-team__dropdown-icon" ] [] ]
+                , ul [ class "nav-team__dropdown dropdown-menu nav" ] []
+                ]
+            , div [ class "collapse navbar-collapse navbar-search navbar-sub__search" ]
+                [ Html.form [ onSubmit (Send 1), class "navbar-form navbar-sub__navbar-form js-search-form" ]
+                    [ div [ class "form-group" ]
+                        [ div [ class "typeahead__container" ]
+                            [ div [ class "typeahead__query" ]
+                                [ i [ class "fa fa-search navbar-form__icon" ] []
+                                , span [ class "typeahead__cancel-button" ] []
+                                , input
+                                    [ class "form-control"
+                                    , onInput Input
+                                    , placeholder "foo category:bar/baz comment:foobar"
+                                    , value model.searchQuery
+                                    ]
+                                    []
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        , div [ class "body" ]
+            [ div [ class "layout-wrapper" ]
+                [ div [ class "row post-index-wrapper" ]
+                    [ div [ class "main-column" ]
+                        [ h2 []
+                            [ i [ class "fa fa-file-text-o" ] []
+                            , text "Posts"
+                            ]
+                        , case model.userState of
+                            Init ->
+                                text ""
 
-            Failed e ->
-                div [] [ text (Debug.toString e) ]
+                            Waiting ->
+                                text "Waiting..."
+
+                            Loaded posts ->
+                                div []
+                                    [ nav [ class "pagination" ]
+                                        [ linkPrevPage posts, currentPage posts, linkNextPage posts ]
+                                    , div []
+                                        [ ul []
+                                            (List.map (\post -> linkPost post) posts.posts)
+                                        ]
+                                    , nav [ class "pagination" ]
+                                        [ linkPrevPage posts, currentPage posts, linkNextPage posts ]
+                                    ]
+
+                            Failed e ->
+                                div [] [ text (Debug.toString e) ]
+                        ]
+                    ]
+                ]
+            ]
         ]
 
 
