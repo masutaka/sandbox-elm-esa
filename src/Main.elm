@@ -64,7 +64,7 @@ update msg model =
             ( { model | userState = Waiting }
             , Http.request
                 { method = "GET"
-                , headers = [ Http.header "Authorization" "Bearer elsEF-bG88mXB_KfgG6WKqnY9bayUL0z8m12L3nWLAc" ]
+                , headers = [ Http.header "Authorization" "Bearer SECRET" ]
                 , url =
                     Url.Builder.crossOrigin
                         "https://api.esa.io"
